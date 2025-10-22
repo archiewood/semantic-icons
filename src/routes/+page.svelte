@@ -8,7 +8,7 @@
 
 	let query = $state('');
 	let results = $state<IconData[]>(
-		data.iconsWithEmbeddings.map(({ embedding, ...icon }) => icon)
+		data.iconsWithEmbeddings.map(({ embedding: _, ...icon }) => icon)
 	);
 	let isSearching = $state(false);
 	let copiedIcon = $state<string | null>(null);
@@ -19,7 +19,7 @@
 		clearTimeout(searchTimeout);
 
 		if (!query.trim()) {
-			results = data.iconsWithEmbeddings.map(({ embedding, ...icon }) => icon);
+			results = data.iconsWithEmbeddings.map(({ embedding: _, ...icon }) => icon);
 			isSearching = false;
 			return;
 		}
@@ -83,7 +83,9 @@
 			{/if}
 		</div>
 
-		<div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2">
+		<div
+			class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2"
+		>
 			{#each results as icon (icon.name)}
 				{@const IconComponent = getIconComponent(icon.name)}
 				{@const isCopied = copiedIcon === icon.name}

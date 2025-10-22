@@ -31,7 +31,7 @@ export async function searchIcons(
 	iconsWithEmbeddings: IconWithEmbedding[]
 ): Promise<IconData[]> {
 	if (!query.trim()) {
-		return iconsWithEmbeddings.map(({ embedding, ...icon }) => icon);
+		return iconsWithEmbeddings.map(({ embedding: _, ...icon }) => icon);
 	}
 
 	// Get query embedding from API
@@ -59,5 +59,5 @@ export async function searchIcons(
 	// Return top results (filter out very low scores)
 	return results
 		.filter((result) => result.score > 0.3)
-		.map(({ icon: { embedding, ...icon } }) => icon);
+		.map(({ icon: { embedding: _, ...icon } }) => icon);
 }
