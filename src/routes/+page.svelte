@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { searchIcons } from '$lib/search';
 	import { icons } from 'lucide-svelte';
+	import type { Component } from 'svelte';
 
 	let query = $state('');
 	let results = $derived(searchIcons(query));
+
+	function getIconComponent(name: string): Component {
+		return (icons as unknown as Record<string, Component>)[name];
+	}
 </script>
 
 <div class="container">
@@ -20,15 +25,16 @@
 	/>
 
 	<div class="results-count">
-		{results.length} {results.length === 1 ? 'icon' : 'icons'} found
+		{results.length}
+		{results.length === 1 ? 'icon' : 'icons'} found
 	</div>
 
 	<div class="icons-grid">
-		{#each results as icon}
-			{@const IconComponent = icons[icon.name]}
+		{#each results as icon (icon.name)}
+			{@const IconComponent = getIconComponent(icon.name)}
 			<div class="icon-card">
 				<div class="icon-preview">
-					<svelte:component this={IconComponent} size={32} />
+					<IconComponent size={32} />
 				</div>
 				<div class="icon-name">{icon.name}</div>
 			</div>
