@@ -40,6 +40,11 @@
 		return (icons as unknown as Record<string, Component>)[name];
 	}
 
+	function formatIconName(name: string): string {
+		// Insert zero-width spaces between lowercase and uppercase letters for better wrapping
+		return name.replace(/([a-z])([A-Z])/g, '$1\u200B$2');
+	}
+
 	async function copyToClipboard(iconName: string) {
 		try {
 			await navigator.clipboard.writeText(iconName);
@@ -108,7 +113,7 @@
 							? 'text-green-700 font-medium'
 							: 'text-slate-600'}"
 					>
-						{isCopied ? 'Copied!' : icon.name}
+						{isCopied ? 'Copied!' : formatIconName(icon.name)}
 					</div>
 				</button>
 			{/each}
