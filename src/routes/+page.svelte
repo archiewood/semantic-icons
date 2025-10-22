@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { searchIcons } from '$lib/search';
+	import { onMount } from 'svelte';
+	import { searchIcons, type IconWithEmbedding } from '$lib/search';
 	import { icons } from 'lucide-svelte';
 	import type { Component } from 'svelte';
 	import type { IconData } from '$lib/icons-data';
@@ -7,11 +8,25 @@
 	let { data } = $props();
 
 	let query = $state('');
-	let results = $state<IconData[]>(
-		data.iconsWithEmbeddings.map(({ embedding: _, ...icon }) => icon)
-	);
+	let results = $state<IconData[]>(data.icons);
 	let isSearching = $state(false);
 	let copiedIcon = $state<string | null>(null);
+	let embeddingsLoaded = $state(false);
+	let embeddingsLoading = $state(true);
+	let iconsWithEmbeddings = $state<IconWithEmbedding[]>([]);
+
+	// Lazy load embeddings in the background (client-side only)
+	onMount(async () => {
+		try {
+			const response = await fetch('/embeddings.json');
+			iconsWithEmbeddings = await response.json();
+			embeddingsLoaded = true;
+		} catch (error) {
+			console.error('Failed to load embeddings:', error);
+		} finally {
+			embeddingsLoading = false;
+		}
+	});
 
 	// Debounced search
 	let searchTimeout: ReturnType<typeof setTimeout>;
@@ -19,7 +34,16 @@
 		clearTimeout(searchTimeout);
 
 		if (!query.trim()) {
-			results = data.iconsWithEmbeddings.map(({ embedding: _, ...icon }) => icon);
+			results = data.icons;
+			isSearching = false;
+			return;
+		}
+
+		// If embeddings aren't loaded yet, use simple text search as fallback
+		if (!embeddingsLoaded) {
+			results = data.icons.filter((icon) =>
+				icon.searchText.toLowerCase().includes(query.toLowerCase())
+			);
 			isSearching = false;
 			return;
 		}
@@ -27,7 +51,7 @@
 		isSearching = true;
 		searchTimeout = setTimeout(async () => {
 			try {
-				results = await searchIcons(query, data.iconsWithEmbeddings);
+				results = await searchIcons(query, iconsWithEmbeddings);
 			} catch (error) {
 				console.error('Search error:', error);
 			} finally {

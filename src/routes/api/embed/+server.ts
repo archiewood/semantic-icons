@@ -18,7 +18,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const response = await openai.embeddings.create({
 			model: 'text-embedding-3-small',
 			input: text,
-			dimensions: 512 // Match the dimensions used in generate-embeddings script
+			dimensions: 256 // Match the dimensions used in generate-embeddings script
 		});
 
 		return json({ embedding: response.data[0].embedding });

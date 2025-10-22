@@ -1,13 +1,9 @@
 import type { PageLoad } from './$types';
-import type { IconWithEmbedding } from '$lib/search';
+import { iconsData } from '$lib/icons-data';
 
-export const ssr = false;
-
-export const load: PageLoad = async ({ fetch }) => {
-	const response = await fetch('/embeddings.json');
-	const iconsWithEmbeddings: IconWithEmbedding[] = await response.json();
-
+export const load: PageLoad = async () => {
+	// Return lightweight icon data immediately for fast SSR
 	return {
-		iconsWithEmbeddings
+		icons: iconsData
 	};
 };
