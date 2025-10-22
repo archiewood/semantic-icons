@@ -11,7 +11,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint ."
+		"lint": "prettier --check . && eslint .",
+		"generate-embeddings": "vite-node scripts/generate-embeddings.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
@@ -28,12 +29,18 @@
 		"prettier-plugin-svelte": "^3.4.0",
 		"svelte": "^5.39.5",
 		"svelte-check": "^4.3.2",
+		"tailwindcss": "^4.1.15",
+		"tsx": "^4.20.6",
 		"typescript": "^5.9.2",
 		"typescript-eslint": "^8.44.1",
-		"vite": "^7.1.7"
+		"vite": "^7.1.7",
+		"vite-node": "^3.2.4"
 	},
 	"dependencies": {
-		"fuse.js": "^7.1.0",
-		"lucide-svelte": "^0.546.0"
+		"@tailwindcss/vite": "^4.1.15",
+		"dotenv": "^17.2.3",
+		"lucide": "^0.546.0",
+		"lucide-svelte": "^0.546.0",
+		"openai": "^6.6.0"
 	}
 }

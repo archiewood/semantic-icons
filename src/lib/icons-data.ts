@@ -2,29 +2,29 @@ import { icons } from 'lucide-svelte';
 
 export interface IconData {
 	name: string;
-	keywords: string[];
+	description: string;
+	searchText: string;
 }
 
 // Extract icon names and create searchable data
 export const iconsData: IconData[] = Object.keys(icons)
 	.filter((key) => key !== 'createLucideIcon' && key !== 'Icon')
-	.map((name) => ({
-		name,
-		keywords: generateKeywords(name)
-	}));
+	.map((name) => {
+		const description = generateDescription(name);
+		return {
+			name,
+			description,
+			searchText: `${name} ${description}`
+		};
+	});
 
-function generateKeywords(name: string): string[] {
-	// Convert PascalCase to separate words and lowercase
+function generateDescription(name: string): string {
+	// Convert PascalCase to separate words
 	const words = name
 		.replace(/([A-Z])/g, ' $1')
 		.trim()
-		.toLowerCase()
-		.split(' ');
+		.toLowerCase();
 
-	return [
-		name.toLowerCase(),
-		...words,
-		words.join(' '),
-		words.join('-')
-	];
+	// Generate contextual description
+	return `${words} icon`;
 }

@@ -2,125 +2,90 @@
 	import { searchIcons } from '$lib/search';
 	import { icons } from 'lucide-svelte';
 	import type { Component } from 'svelte';
+	import type { IconData } from '$lib/icons-data';
+
+	let { data } = $props();
 
 	let query = $state('');
-	let results = $derived(searchIcons(query));
+	let results = $state<IconData[]>(
+		data.iconsWithEmbeddings.map(({ embedding, ...icon }) => icon)
+	);
+	let isSearching = $state(false);
+
+	// Debounced search
+	let searchTimeout: ReturnType<typeof setTimeout>;
+	$effect(() => {
+		clearTimeout(searchTimeout);
+
+		if (!query.trim()) {
+			results = data.iconsWithEmbeddings.map(({ embedding, ...icon }) => icon);
+			isSearching = false;
+			return;
+		}
+
+		isSearching = true;
+		searchTimeout = setTimeout(async () => {
+			try {
+				results = await searchIcons(query, data.iconsWithEmbeddings);
+			} catch (error) {
+				console.error('Search error:', error);
+			} finally {
+				isSearching = false;
+			}
+		}, 500);
+	});
 
 	function getIconComponent(name: string): Component {
 		return (icons as unknown as Record<string, Component>)[name];
 	}
 </script>
 
-<div class="container">
-	<header>
-		<h1>Lucide Icon Search</h1>
-		<p>Semantic search for Lucide icons - type to find icons by name or keyword</p>
-	</header>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		<header class="text-center mb-12">
+			<h1 class="text-5xl font-bold text-slate-900 mb-3">Lucide Icon Search</h1>
+			<p class="text-xl text-slate-600">
+				Semantic search for Lucide icons - type to find icons by name or meaning
+			</p>
+		</header>
 
-	<input
-		type="text"
-		bind:value={query}
-		placeholder="Search icons... (e.g., 'home', 'user', 'arrow')"
-		class="search-input"
-	/>
+		<div class="max-w-2xl mx-auto mb-8">
+			<input
+				type="text"
+				bind:value={query}
+				placeholder="Search icons... (e.g., 'house', 'trash', 'happy')"
+				class="w-full px-6 py-4 text-lg bg-white border-2 border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+			/>
+		</div>
 
-	<div class="results-count">
-		{results.length}
-		{results.length === 1 ? 'icon' : 'icons'} found
-	</div>
+		<div class="mb-6 text-center text-slate-600">
+			{#if isSearching}
+				<span class="inline-flex items-center gap-2">
+					<span
+						class="inline-block w-4 h-4 border-2 border-slate-300 border-t-blue-500 rounded-full animate-spin"
+					></span>
+					Searching...
+				</span>
+			{:else}
+				<span class="font-medium">{results.length}</span>
+				{results.length === 1 ? 'icon' : 'icons'} found
+			{/if}
+		</div>
 
-	<div class="icons-grid">
-		{#each results as icon (icon.name)}
-			{@const IconComponent = getIconComponent(icon.name)}
-			<div class="icon-card">
-				<div class="icon-preview">
-					<IconComponent size={32} />
+		<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+			{#each results as icon (icon.name)}
+				{@const IconComponent = getIconComponent(icon.name)}
+				<div
+					class="bg-white p-6 rounded-lg border border-slate-200 hover:border-blue-400 hover:shadow-lg transition-all duration-200 flex flex-col items-center gap-3 cursor-pointer group"
+				>
+					<div class="text-slate-700 group-hover:text-blue-600 transition-colors">
+						<IconComponent size={32} />
+					</div>
+					<div class="text-xs text-slate-600 text-center break-words w-full">
+						{icon.name}
+					</div>
 				</div>
-				<div class="icon-name">{icon.name}</div>
-			</div>
-		{/each}
+			{/each}
+		</div>
 	</div>
 </div>
-
-<style>
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
-	header {
-		text-align: center;
-		margin-bottom: 2rem;
-	}
-
-	h1 {
-		font-size: 2.5rem;
-		margin-bottom: 0.5rem;
-		color: #333;
-	}
-
-	p {
-		color: #666;
-		font-size: 1rem;
-	}
-
-	.search-input {
-		width: 100%;
-		padding: 1rem;
-		font-size: 1.125rem;
-		border: 2px solid #e0e0e0;
-		border-radius: 8px;
-		margin-bottom: 1rem;
-		transition: border-color 0.2s;
-	}
-
-	.search-input:focus {
-		outline: none;
-		border-color: #4a90e2;
-	}
-
-	.results-count {
-		margin-bottom: 1.5rem;
-		color: #666;
-		font-size: 0.9rem;
-	}
-
-	.icons-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-		gap: 1rem;
-	}
-
-	.icon-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 1.5rem 1rem;
-		border: 1px solid #e0e0e0;
-		border-radius: 8px;
-		transition: all 0.2s;
-		cursor: pointer;
-	}
-
-	.icon-card:hover {
-		border-color: #4a90e2;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-		transform: translateY(-2px);
-	}
-
-	.icon-preview {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: 0.75rem;
-		color: #333;
-	}
-
-	.icon-name {
-		font-size: 0.875rem;
-		color: #666;
-		text-align: center;
-		word-break: break-word;
-	}
-</style>
