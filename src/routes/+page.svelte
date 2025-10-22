@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { searchIcons, type IconWithEmbedding } from '$lib/search';
-	import { icons } from 'lucide-svelte';
+	import { icons, Github } from 'lucide-svelte';
 	import type { Component } from 'svelte';
 	import type { IconData } from '$lib/icons-data';
 
@@ -83,7 +83,18 @@
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
+		<!-- GitHub link -->
+		<a
+			href="https://github.com/archiewood/semantic-icons"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="absolute top-4 right-4 p-2 text-slate-700 hover:text-slate-900 transition-colors"
+			aria-label="View on GitHub"
+		>
+			<Github size={28} />
+		</a>
+
 		<header class="text-center mb-12">
 			<h1 class="text-5xl font-bold text-slate-900 mb-3">Semantic Lucide</h1>
 			<p class="text-xl text-slate-600">Find the perfect Lucide icon using semantic search.</p>
