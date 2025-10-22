@@ -104,8 +104,9 @@
 			<input
 				type="text"
 				bind:value={query}
-				placeholder="Search icons... (e.g., 'house', 'trash', 'happy')"
+				placeholder="e.g. delete, plans, report user"
 				class="w-full px-6 py-4 text-lg bg-white border-2 border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400"
+				autofocus
 			/>
 		</div>
 
