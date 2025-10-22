@@ -61,7 +61,7 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 		<header class="text-center mb-12">
-			<h1 class="text-5xl font-bold text-slate-900 mb-3">Lucide Svelte Semantic Search</h1>
+			<h1 class="text-5xl font-bold text-slate-900 mb-3">Semantic Lucide</h1>
 			<p class="text-xl text-slate-600">Search lucide-svelte icons by meaning</p>
 		</header>
 
