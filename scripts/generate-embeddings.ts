@@ -32,7 +32,8 @@ async function generateEmbeddings() {
 
 		const response = await openai.embeddings.create({
 			model: 'text-embedding-3-small',
-			input: batch.map((icon) => icon.searchText)
+			input: batch.map((icon) => icon.searchText),
+			dimensions: 512 // Reduce from 1536 to 512 for smaller file size (~1/3 size)
 		});
 
 		for (let j = 0; j < batch.length; j++) {
